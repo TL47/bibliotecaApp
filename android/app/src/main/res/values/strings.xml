@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Biblioteca Personal</string>
-    <string name="title_activity_main">Biblioteca Personal</string>
+    <string name="app_name">BiblioTech</string>
+    <string name="title_activity_main">BiblioTech</string>
     <string name="package_name">com.tl47.biblioteca</string>
     <string name="custom_url_scheme">com.tl47.biblioteca</string>
 </resources>
