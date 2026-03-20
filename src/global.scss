@@ -35,3 +35,14 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+/* Force light background to avoid black flash on startup */
+body, ion-app, ion-content, app-root {
+	background: #ffffff !important;
+	color: #000000 !important;
+}
+
+/* Ensure iframe background is white */
+.libros-frame {
+	background: #ffffff;
+}
