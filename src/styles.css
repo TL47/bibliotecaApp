@@ -1,0 +1,308 @@
+/* Copiado desde Libros/style.css para igualar el diseño visual */
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Lora:ital,wght@0,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0');
+
+/* --- INICIO CSS ORIGINAL --- */
+
+/* ===================== RESPONSIVE DESIGN ===================== */
+@media (max-width: 900px) {
+    .container {
+        max-width: 98vw;
+        padding: 0 8px;
+    }
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 18px;
+    }
+    .modal-content {
+        max-width: 98vw;
+        padding: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 24px 0;
+        font-size: 1.2rem;
+    }
+    h1 {
+        font-size: 2rem;
+    }
+    .container {
+        padding: 0 2px;
+    }
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .book-card {
+        max-width: 95vw;
+        min-width: 0;
+        padding: 6px;
+    }
+    .book-card img {
+        height: 120px;
+        min-width: 70px;
+        max-width: 90vw;
+    }
+    .modal-content {
+        padding: 10px;
+        max-width: 99vw;
+    }
+    .cover-row {
+        flex-direction: column;
+        gap: 6px;
+    }
+    .cover-row button {
+        width: 100%;
+        min-width: unset;
+    }
+    input, select, textarea, button {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .book-card {
+        max-width: 95vw;
+        min-width: 0;
+        padding: 3px;
+        font-size: 0.85rem;
+    }
+    .book-card img {
+        height: 80px;
+        min-width: 48px;
+        max-width: 60vw;
+        border-radius: 5px;
+    }
+    .book-title {
+        font-size: 1rem;
+        margin: 2px 0 0 0;
+    }
+    .book-author {
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+    }
+    .card-actions button {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+}
+#title {
+    position: relative;
+    background: transparent;
+    z-index: 2;
+}
+#titleGhost {
+    position: absolute;
+    left: 0;
+    top: -10px;
+    height: 100%;
+    color: #bfc9d6;
+    opacity: 0.6;
+    pointer-events: none;
+    font-family: inherit;
+    font-size: 1rem;
+    z-index: 1;
+    white-space: pre;
+    user-select: none;
+    width: 100%;
+    overflow: hidden;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    line-height: normal;
+    box-sizing: border-box;
+}
+/* Input URL de portada y botón en una fila */
+.cover-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.cover-row input[type="url"] {
+    flex: 1 1 70%;
+    min-width: 0;
+}
+.cover-row button {
+    flex: 0 0 160px;
+    min-width: 120px;
+    padding-left: 0;
+    padding-right: 0;
+    white-space: nowrap;
+}
+.book-card img {
+    width: 180px;
+    height: 270px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: #fff;
+}
+/* Aura visual para selección múltiple de libros */
+.book-selected-aura {
+    box-shadow: 0 0 0 4px var(--st-pats-gold), 0 0 16px 4px #c5a05999;
+    border: 2px solid var(--st-pats-gold) !important;
+    position: relative;
+    z-index: 2;
+    transition: box-shadow 0.2s, border 0.2s;
+}
+/* Fondo animado de portada de saga */
+.saga-bg-animated {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    opacity: 1;
+    transition: opacity 0.4s;
+    filter: brightness(0.7) blur(1px);
+}
+
+.saga-card {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.saga-card > h3,
+.saga-card > span,
+.saga-card > .card-actions {
+    position: relative;
+    z-index: 2;
+}
+:root {
+    --tommen-blue: #1a2a44;
+    --tommen-green: #2d4c3e;
+    --st-pats-gold: #c5a059;
+    --cloud-grey: #e2e8f0;
+    --dark-bg: #0f172a;
+}
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: 'Lora', serif;
+    background-color: var(--dark-bg);
+    background-image: linear-gradient(rgba(26, 42, 68, 0.8), rgba(15, 23, 42, 1));
+    color: var(--cloud-grey);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    padding: 50px 0;
+    border-bottom: 2px solid var(--st-pats-gold);
+    margin-bottom: 40px;
+}
+
+h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 3.5rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 0;
+    color: white;
+    text-shadow: 2px 2px var(--tommen-green);
+}
+
+.stats {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    color: var(--st-pats-gold);
+    letter-spacing: 2px;
+    margin-top: 10px;
+}
+
+.nav-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+input#searchInput {
+    flex: 1;
+    padding: 15px;
+    border: 1px solid var(--tommen-green);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-family: 'Lora', serif;
+    border-radius: 4px;
+}
+
+.btn {
+    padding: 15px 25px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    transition: 0.3s;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.btn-main {
+    background: var(--tommen-green);
+    color: white;
+    border-bottom: 3px solid #1a3329;
+}
+
+.btn-saga {
+    background: var(--tommen-blue);
+    color: white;
+    border-bottom: 3px solid #0d1624;
+}
+
+.btn-back {
+    background: transparent;
+    color: var(--st-pats-gold);
+    border: 1px solid var(--st-pats-gold);
+    margin-bottom: 20px;
+}
+
+.btn-cancel {
+    background: transparent;
+    color: var(--st-pats-gold);
+    border: 1px solid var(--st-pats-gold);
+    margin-top: 10px;
+    width: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 30px;
+}
+
+/* --- FIN CSS ORIGINAL --- */

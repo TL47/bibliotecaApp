@@ -1,0 +1,250 @@
+    <!-- Modal editar saga -->
+    <div *ngIf="editandoSaga" class="modal" style="display:flex; align-items:center; justify-content:center;">
+      <div class="modal-content" style="max-width:350px;">
+        <h2 style="font-family:'Oswald'; color:var(--st-pats-gold); text-align:center;">EDITAR SAGA</h2>
+        <form (ngSubmit)="guardarEdicionSaga()" #editSagaForm="ngForm">
+          <input type="text" placeholder="Nombre de la saga" [(ngModel)]="sagaEditando.name" name="editSagaName" required>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button type="submit" class="btn btn-main" [disabled]="editSagaForm.invalid || editSagaLoading">{{ editSagaLoading ? 'Guardando...' : 'GUARDAR' }}</button>
+            <button type="button" class="btn btn-cancel" (click)="cerrarEditarSaga()">CANCELAR</button>
+          </div>
+          <div *ngIf="editSagaError" style="color:#c00; margin-top:10px; text-align:center;">{{ editSagaError }}</div>
+        </form>
+      </div>
+    </div>
+<!-- MODAL DE AUTENTICACIÓN -->
+<div *ngIf="showLogin" id="authModal" class="modal" style="display: flex;">
+  <div class="modal-content" style="max-width: 350px;">
+    <h2 id="authTitle" style="font-family: 'Oswald'; color: var(--st-pats-gold); text-align: center;">
+      {{ isSigningUp ? 'REGÍSTRATE' : 'INICIA SESIÓN' }}
+    </h2>
+    <form id="authForm" (ngSubmit)="login(authEmail.value, authPassword.value)">
+      <input #authEmail type="email" id="authEmail" placeholder="Email" required style="margin-bottom: 1rem;">
+      <div class="password-wrapper" style="display:flex; align-items:center;">
+        <input #authPassword [type]="mostrarPassword ? 'text' : 'password'" id="authPassword" placeholder="Contraseña" required style="flex:1;">
+        <button type="button" (click)="mostrarPassword = !mostrarPassword" style="margin-left:8px; background:none; border:none; cursor:pointer;">
+          <span class="material-symbols-outlined">{{ mostrarPassword ? 'visibility' : 'visibility_off' }}</span>
+        </button>
+      </div>
+      <label class="remember-session-label" style="display:flex; align-items:center; gap:6px; margin-top:8px;">
+        <input type="checkbox" id="rememberMe" class="remember-session-checkbox" [(ngModel)]="mantenerSesion" name="mantenerSesion">
+        🔐 Mantener sesión iniciada
+      </label>
+      <button type="submit" id="authBtn" class="btn btn-main" style="width: 100%;" [disabled]="loading">
+        {{ loading ? 'CARGANDO...' : (isSigningUp ? 'CREAR CUENTA' : 'INICIAR SESIÓN') }}
+      </button>
+      <button type="button" id="toggleAuthBtn" class="btn btn-saga" style="width: 100%; margin-top: 10px;"
+        (click)="toggleAuthMode()" [disabled]="loading">
+        {{ isSigningUp ? '¿Ya tienes cuenta? INICIA SESIÓN' : '¿No tienes cuenta? REGÍSTRATE' }}
+      </button>
+      <div *ngIf="errorMsg" style="color:#c00; margin-top:10px; text-align:center;">{{ errorMsg }}</div>
+    </form>
+  </div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div *ngIf="!showLogin" class="container" id="mainContainer">
+  <header>
+    <h1 id="viewTitle">{{ sagaVista ? sagaVista.name : 'Biblioteca Personal' }}</h1>
+    <div class="stats" id="mainStats">
+      {{ (libros || []).length }} LIBROS TOTALES
+    </div>
+  </header>
+  <div id="navigationControls">
+    <button *ngIf="sagaVista" id="btnBack" class="btn btn-back" (click)="volverBiblioteca()">← VOLVER A LA BIBLIOTECA</button>
+    <div class="nav-controls">
+      <input type="text" id="searchInput" placeholder="Buscar título o autor..." [(ngModel)]="busqueda" name="busqueda">
+      <button id="addBookBtn" class="btn btn-main" (click)="showAddBook = true">+ AÑADIR LIBRO</button>
+      <button id="addSagaBtn" class="btn btn-saga" (click)="showAddSaga = true">+ CREAR SAGA</button>
+    </div>
+
+    <!-- GRID DE LIBROS -->
+    <div class="libros-grid" id="librosGrid">
+      <div *ngFor="let libro of libros | libroFiltro:busqueda:filtroActivo | libroFiltroAvanzado:sagaVista; let i = index" class="libro-card" [class.leido]="libro.estado==='leido'" [class.leyendo]="libro.estado==='leyendo'" [class.pendiente]="libro.estado==='pendiente'">
+        <div class="libro-portada" (click)="abrirLibro(libro)">
+          <img [src]="libro.portada || 'assets/portada-default.png'" [alt]="libro.titulo">
+        </div>
+        <div class="libro-info">
+          <div class="libro-titulo">{{ libro.titulo }}</div>
+          <div class="libro-autor">{{ libro.autor }}</div>
+          <div class="libro-estado">
+            <span *ngIf="libro.estado==='leido'">⭐ Leído</span>
+            <span *ngIf="libro.estado==='leyendo'">📖 Leyendo</span>
+            <span *ngIf="libro.estado==='pendiente'">⏳ Pendiente</span>
+          </div>
+          <div class="libro-acciones">
+            <button class="btn btn-saga" *ngIf="!sagaVista" (click)="verSaga(libro.saga)">Ver saga</button>
+            <button class="btn btn-main" (click)="editarLibro(libro)"><span class="material-symbols-outlined">edit</span></button>
+            <button class="btn btn-cancel" (click)="eliminarLibro(libro)"><span class="material-symbols-outlined">delete</span></button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="(libros | libroFiltro:busqueda:filtroActivo | libroFiltroAvanzado:sagaVista).length === 0" class="no-libros">
+        No hay libros para mostrar.
+      </div>
+    </div>
+
+    <!-- MODAL AÑADIR SAGA -->
+    <div *ngIf="showAddSaga" class="modal" style="display:flex; align-items:center; justify-content:center;">
+      <div class="modal-content" style="max-width:350px;">
+        <h2 style="font-family:'Oswald'; color:var(--st-pats-gold); text-align:center;">NUEVA SAGA</h2>
+        <form (ngSubmit)="addSaga()" #addSagaForm="ngForm">
+          <input type="text" placeholder="Nombre de la saga" [(ngModel)]="nuevaSaga.name" name="sagaName" required>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button type="submit" class="btn btn-main" [disabled]="addSagaForm.invalid || addSagaLoading">{{ addSagaLoading ? 'Guardando...' : 'CREAR' }}</button>
+            <button type="button" class="btn btn-cancel" (click)="showAddSaga = false">CANCELAR</button>
+          </div>
+          <div *ngIf="addSagaError" style="color:#c00; margin-top:10px; text-align:center;">{{ addSagaError }}</div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL AÑADIR LIBRO -->
+    <div *ngIf="showAddBook" class="modal" style="display:flex; align-items:center; justify-content:center;">
+      <div class="modal-content" style="max-width:350px;">
+        <h2 style="font-family:'Oswald'; color:var(--st-pats-gold); text-align:center;">AÑADIR LIBRO</h2>
+        <form (ngSubmit)="addLibro()" #addLibroForm="ngForm">
+          <input type="text" placeholder="Título" [(ngModel)]="nuevoLibro.titulo" name="titulo" required>
+          <input type="text" placeholder="Autor" [(ngModel)]="nuevoLibro.autor" name="autor" required>
+          <input type="text" placeholder="Saga (opcional)" [(ngModel)]="nuevoLibro.saga" name="saga">
+          <input type="url" placeholder="URL portada (opcional)" [(ngModel)]="nuevoLibro.portada" name="portada">
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button type="submit" class="btn btn-main" [disabled]="addLibroForm.invalid || addLibroLoading">{{ addLibroLoading ? 'Guardando...' : 'AÑADIR' }}</button>
+            <button type="button" class="btn btn-cancel" (click)="showAddBook = false">CANCELAR</button>
+          </div>
+          <div *ngIf="addLibroError" style="color:#c00; margin-top:10px; text-align:center;">{{ addLibroError }}</div>
+        </form>
+      </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer">
+      <span>Biblioteca App &copy; 2026</span>
+    </footer>
+
+  </div>
+
+    <!-- Modal añadir libro -->
+    <div *ngIf="showAddBook" class="modal" style="display:flex; align-items:center; justify-content:center;">
+      <div class="modal-content" style="max-width:350px;">
+        <h2 style="font-family:'Oswald'; color:var(--st-pats-gold); text-align:center;">AÑADIR LIBRO</h2>
+        <form (ngSubmit)="addLibro()" #addBookForm="ngForm">
+          <div style="position:relative;">
+            <input type="text" placeholder="Título" [(ngModel)]="nuevoLibro.title" name="title" required (input)="buscarSugerenciasTitulo()" [attr.autocomplete]="'off'" (focus)="focusCampo='title'" (blur)="onBlurCampo('title')" [class.input-error]="addLibroError && !nuevoLibro.title">
+            <ul *ngIf="sugerenciasTitulo.length && focusCampo==='title'" class="autocomplete-list fadeIn">
+              <li *ngFor="let sug of sugerenciasTitulo" (mousedown)="seleccionarSugerenciaTitulo(sug)">{{ sug.title }} <span *ngIf="sug.author">- {{ sug.author }}</span></li>
+            </ul>
+          </div>
+          <div style="position:relative;">
+            <input type="text" placeholder="Autor/a" [(ngModel)]="nuevoLibro.author" name="author" required (input)="buscarSugerenciasAutor()" [attr.autocomplete]="'off'" (focus)="focusCampo='author'" (blur)="onBlurCampo('author')" [class.input-error]="addLibroError && !nuevoLibro.author">
+            <ul *ngIf="sugerenciasAutor.length && focusCampo==='author'" class="autocomplete-list fadeIn">
+              <li *ngFor="let sug of sugerenciasAutor" (mousedown)="seleccionarSugerenciaAutor(sug)">{{ sug }}</li>
+            </ul>
+          </div>
+          <div class="cover-row" style="display:flex; align-items:center; gap:8px; margin-bottom:20px;">
+            <input type="url" placeholder="URL de la Imagen" [(ngModel)]="nuevoLibro.cover" name="cover" required [class.input-error]="addLibroError && !nuevoLibro.cover">
+            <button type="button" class="btn btn-mini" (click)="buscarPortadaGoogleBooks()" title="Buscar portada automáticamente" [disabled]="!nuevoLibro.title">🔍</button>
+          </div>
+          <div *ngIf="addLibroLoading" class="loading-spinner" style="margin-bottom:10px;"></div>
+          <select [(ngModel)]="nuevoLibro.rating" name="rating" required [class.input-error]="addLibroError && !nuevoLibro.rating">
+            <option value="0">Valoración</option>
+            <option value="6">Leyendo</option>
+            <option value="7">Pendiente</option>
+            <option value="8">Abandonado</option>
+            <option value="5">⭐⭐⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="1">⭐</option>
+          </select>
+          <input type="date" placeholder="Fecha de lectura" [(ngModel)]="nuevoLibro.readDate" name="readDate">
+          <select [(ngModel)]="nuevoLibro.sagaId" name="sagaId">
+            <option [ngValue]="null">Sin saga</option>
+            <option *ngFor="let saga of sagas" [ngValue]="saga.id">{{ saga.name }}</option>
+          </select>
+          <textarea placeholder="Opinión (Opcional)" rows="3" [(ngModel)]="nuevoLibro.opinion" name="opinion"></textarea>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button type="submit" class="btn btn-main" [disabled]="addBookForm.invalid || addLibroLoading" [class.btn-loading]="addLibroLoading">{{ addLibroLoading ? 'Guardando...' : 'GUARDAR' }}</button>
+            <button type="button" class="btn btn-cancel" (click)="showAddBook = false">CANCELAR</button>
+          </div>
+          <div *ngIf="addLibroError" style="color:#c00; margin-top:10px; text-align:center; animation: fadeIn 0.3s;">{{ addLibroError }}</div>
+        </form>
+      </div>
+    </div>
+
+    <div *ngIf="sagas.length > 0 && !sagaVista" style="margin-bottom:2em;">
+      <h3 style="color:#a88b5a; font-family:'Oswald'; margin-bottom:8px;">Sagas</h3>
+      <div *ngFor="let saga of sagas" class="saga-card">
+        <div class="saga-title" (click)="verSaga(saga)" style="cursor:pointer;"><b>{{ saga.name }}</b> ({{ saga.books?.length || 0 }} libros)</div>
+        <button class="btn btn-main" style="margin-right:8px;" (click)="abrirEditarSaga(saga)">✏️</button>
+        <button class="btn btn-cancel" (click)="borrarSaga(saga.id)">🗑️</button>
+      </div>
+    </div>
+    <div id="mainGrid" class="grid">
+      <div *ngIf="librosLoading" style="text-align:center; color:#888; margin:2em 0;">Cargando libros...</div>
+      <div *ngIf="!librosLoading && (sagaVista ? sagaVista.books.length === 0 : libros.length === 0)" style="text-align:center; color:#888; margin:2em 0;">No hay libros aún.</div>
+      <div *ngFor="let libro of (sagaVista ? sagaVista.books : libros) | libroFiltro:busqueda | libroFiltroAvanzado:filtroActivo" class="libro-card">
+        <div class="libro-cover">
+          <img [src]="libro.cover" alt="Portada" style="width:60px; height:90px; object-fit:cover; border-radius:4px; background:#eee;">
+        </div>
+        <div class="libro-info">
+          <div class="libro-title"><b>{{ libro.title }}</b></div>
+          <div class="libro-author">{{ libro.author }}</div>
+          <div class="libro-rating">Valoración: {{ libro.rating }}</div>
+        </div>
+        <button class="btn btn-main" style="margin-left:auto; margin-right:8px;" (click)="abrirEditarLibro(libro)">✏️</button>
+        <button class="btn btn-cancel" (click)="borrarLibro(libro.id)">🗑️</button>
+          <!-- Modal editar libro -->
+          <div *ngIf="editandoLibro" class="modal" style="display:flex; align-items:center; justify-content:center;">
+            <div class="modal-content" style="max-width:350px;">
+              <h2 style="font-family:'Oswald'; color:var(--st-pats-gold); text-align:center;">EDITAR LIBRO</h2>
+              <form (ngSubmit)="guardarEdicionLibro()" #editBookForm="ngForm">
+                <input type="text" placeholder="Título" [(ngModel)]="libroEditando.title" name="editTitle" required>
+                <input type="text" placeholder="Autor/a" [(ngModel)]="libroEditando.author" name="editAuthor" required>
+                <input type="url" placeholder="URL de la Imagen" [(ngModel)]="libroEditando.cover" name="editCover" required>
+                <select [(ngModel)]="libroEditando.rating" name="editRating" required>
+                  <option value="0">Valoración</option>
+                  <option value="6">Leyendo</option>
+                  <option value="7">Pendiente</option>
+                  <option value="8">Abandonado</option>
+                  <option value="5">⭐⭐⭐⭐⭐</option>
+                  <option value="4">⭐⭐⭐⭐</option>
+                  <option value="3">⭐⭐⭐</option>
+                  <option value="2">⭐⭐</option>
+                  <option value="1">⭐</option>
+                </select>
+                <input type="date" placeholder="Fecha de lectura" [(ngModel)]="libroEditando.readDate" name="editReadDate">
+                <select [(ngModel)]="libroEditando.sagaId" name="editSagaId">
+                  <option [ngValue]="null">Sin saga</option>
+                  <option *ngFor="let saga of sagas" [ngValue]="saga.id">{{ saga.name }}</option>
+                </select>
+                <textarea placeholder="Opinión (Opcional)" rows="3" [(ngModel)]="libroEditando.opinion" name="editOpinion"></textarea>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                  <button type="submit" class="btn btn-main" [disabled]="editBookForm.invalid || editLibroLoading">{{ editLibroLoading ? 'Guardando...' : 'GUARDAR' }}</button>
+                  <button type="button" class="btn btn-cancel" (click)="cerrarEditarLibro()">CANCELAR</button>
+                </div>
+                <div *ngIf="editLibroError" style="color:#c00; margin-top:10px; text-align:center;">{{ editLibroError }}</div>
+              </form>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="sync-controls">
+      <button class="btn btn-sync" (click)="copiarBiblioteca()">📤 COPIAR BIBLIOTECA (PARA PEGAR EN GITHUB)</button>
+      <button class="btn btn-sync" (click)="mostrarImportar = true">📥 IMPORTAR / PEGAR AQUÍ</button>
+          <!-- Modal importar biblioteca -->
+          <div *ngIf="mostrarImportar" class="modal" style="display:flex; align-items:center; justify-content:center;">
+            <div class="modal-content" style="max-width:400px;">
+              <h2 style="font-family:'Oswald'; color:var(--st-pats-gold); text-align:center;">Importar biblioteca</h2>
+              <textarea [(ngModel)]="textoImportar" rows="8" style="width:100%;"></textarea>
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                <button class="btn btn-main" (click)="importarBiblioteca()">IMPORTAR</button>
+                <button class="btn btn-cancel" (click)="mostrarImportar = false">CANCELAR</button>
+              </div>
+              <div *ngIf="importarError" style="color:#c00; margin-top:10px; text-align:center;">{{ importarError }}</div>
+            </div>
+          </div>
+      <button id="logoutBtn" class="btn btn-sync" (click)="logout()">🚪 CERRAR SESIÓN</button>
+    </div>
+  </div>
+</div>

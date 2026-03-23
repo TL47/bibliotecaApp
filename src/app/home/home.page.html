@@ -1,18 +1,3 @@
 <ion-content [fullscreen]="true">
-  <div id="librosWrapper" style="position:relative; height:100%;">
-    <div id="librosFallback" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:#fff; z-index:10;">
-      <div style="text-align:center; color:#333;">
-        <div style="font-weight:bold; margin-bottom:8px;">Cargando BiblioTech...</div>
-        <div style="font-size:12px; color:#666;">Si tarda más de lo esperado, abre la consola para ver errores.</div>
-      </div>
-    </div>
-    <iframe
-      id="librosFrame"
-      class="libros-frame"
-      src="./assets/libros/index.html"
-      title="BiblioTech"
-      style="background:#fff"
-      onload="document.getElementById('librosFallback').style.display='none'"
-    ></iframe>
-  </div>
+  <app-libros></app-libros>
 </ion-content>

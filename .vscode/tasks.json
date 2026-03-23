@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Android APK (Capacitor)",
+			"type": "shell",
+			"command": "npx cap sync android && cd android && ./gradlew assembleRelease",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		}
+	]
+}
